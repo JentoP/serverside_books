@@ -21,25 +21,53 @@ import org.springframework.web.server.ResponseStatusException;
 import java.security.Principal;
 import java.util.Optional;
 
+/**
+ * Controller for handling user authentication and registration.
+ * Provides endpoints for user signup, login, and authentication status.
+ * All endpoints are prefixed with "/api".
+ */
 @RestController
 @RequestMapping("/api")
 @Slf4j
 public class AuthenticationController {
+    /**
+     * Repository for accessing user data in the database.
+     */
     @Autowired
     UserRepository userRepository;
 
+    /**
+     * Used for encoding passwords when creating new users.
+     */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Handles the authentication process.
+     */
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    /**
+     * Checks if the current user is authenticated and returns their username.
+     *
+     * @param principal The currently authenticated user
+     * @return AuthenticationDTO containing the username or "anonymous" if not authenticated
+     */
     @GetMapping("/authenticate")
     public AuthenticationDTO authenticate(Principal principal) {
         log.info("##### authenticate");
         return new AuthenticationDTO(principal != null ? principal.getName() : "anonymous");
     }
 
+    /**
+     * Registers a new user in the system.
+     * Validates that the username is not already taken and creates a new user with hashed password.
+     *
+     * @param userDTO The user data for registration
+     * @return AuthenticationDTO containing the newly created username
+     * @throws ResponseStatusException if the username already exists
+     */
     @PostMapping("/signup")
     public AuthenticationDTO signup(@RequestBody UserDTO userDTO) {
         log.info("##### signup " + userDTO.getUsername());

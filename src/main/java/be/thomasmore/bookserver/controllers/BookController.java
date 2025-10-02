@@ -9,10 +9,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.validation.Valid;
 import java.util.List;
 
+/**
+ * Controller for handling book-related HTTP requests.
+ * Provides REST endpoints for CRUD operations on books.
+ * All endpoints are prefixed with "/api/books".
+ */
 @RestController
 @RequestMapping("/api/books")
 @Slf4j
@@ -20,6 +24,12 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    /**
+     * Retrieves a list of books, optionally filtered by title keyword.
+     *
+     * @param titleKeyWord Optional parameter to filter books by title (case-insensitive)
+     * @return List of BookDTO objects containing basic book information
+     */
     @Operation(summary = "list of books in the database.",
             description = "If Request Parameter <b>titleKeyWord</b> is given: " +
                     "only books where the title contains this titleKeyWord (ignore-case). </br>" +
@@ -33,8 +43,14 @@ public class BookController {
         return bookService.findAll(titleKeyWord);
     }
 
+    /**
+     * Retrieves detailed information about a specific book by its ID.
+     *
+     * @param id The ID of the book to retrieve
+     * @return BookDetailedDTO containing detailed information about the book
+     */
     @Operation(summary = "get 1 book from the database.",
-            description = "Book with id is fetched from database - returns detailed ino. " +
+            description = "Book with id is fetched from database - returns detailed info. " +
                     "</br>" +
                     "The authors Collection contains only id and name. </br>" +
                     "Use GET api/authors/{id} to fetch more info about the authors. ")
@@ -44,6 +60,13 @@ public class BookController {
         return bookService.findOne(id);
     }
 
+    /**
+     * Creates a new book in the database.
+     * Note: This endpoint does not handle author relationships. Use PUT /api/books/{id}/authors to update authors.
+     *
+     * @param bookDto The book data to create
+     * @return The created book's detailed information
+     */
     @Operation(summary = "create a new book in the database.",
             description = "The authors are <b>not</b> updated in the new book.</br>" +
                     "Use PUT api/books/{id}/authors to update those. </br>" +
@@ -55,6 +78,13 @@ public class BookController {
         return bookService.create(bookDto);
     }
 
+    /**
+     * Updates an existing book's information.
+     *
+     * @param id The ID of the book to update
+     * @param bookDto The updated book data
+     * @return The updated book's detailed information
+     */
     @Operation(summary = "edit existing book in the database.",
             description = "The authors are <b>not</b> updated in the new book.</br>" +
                     "Use PUT api/books/{id}/authors to update those. </br>" +
@@ -66,6 +96,24 @@ public class BookController {
         return bookService.edit(id, bookDto);
     }
 
+    /**
+     * Deletes a book from the database.
+     *
+     * @param id The ID of the book to delete
+     */
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id) {
+        log.info(String.format("##### delete book %d", id));
+        bookService.delete(id);
+    }
+
+    /**
+     * Retrieves the list of authors for a specific book.
+     *
+     * @param id The ID of the book
+     * @return List of AuthorDTO objects containing author information
+     */
     @Operation(summary = "find the authors for the given book. ",
             description = "Returns authors collection that contains only id and name. </br>" +
                     "Use GET api/authors/{id}/authors to fetch more info about the authors. ")
@@ -75,6 +123,13 @@ public class BookController {
         return bookService.authorsForBook(id);
     }
 
+    /**
+     * Updates the authors for a specific book.
+     *
+     * @param id The ID of the book to update
+     * @param authorIds List of author IDs to associate with the book
+     * @return The updated book's detailed information
+     */
     @Operation(summary = "update the authors for the given book. ",
             description = "The authors Collection has to contain ids of existing authors. </br>" +
                     "Returns updated book containing id and name of the authors. ")
@@ -83,12 +138,4 @@ public class BookController {
         log.info(String.format("##### edit authors for book %d", id));
         return bookService.editAuthorsForBook(id, authorIds);
     }
-
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-        log.info(String.format("##### delete book %d", id));
-        bookService.delete(id);
-    }
-
 }

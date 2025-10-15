@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "9b2cf1dc-62fe-4e6a-9154-67953d33be6a",
+		"_postman_id": "732e0350-e0b0-49ce-97df-5b3fd17f7e05",
 		"name": "Books",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "48578991",
-		"_collection_link": "https://jentop-ce8bf605-1728731.postman.co/workspace/c5996ed6-4d80-4a92-a9f4-dd49c25dd3c1/collection/48578991-9b2cf1dc-62fe-4e6a-9154-67953d33be6a?action=share&source=collection_link&creator=48578991"
+		"_exporter_id": "13494213"
 	},
 	"item": [
 		{
@@ -405,14 +404,6 @@
 						"authors"
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "invalid request",
-			"request": {
-				"method": "GET",
-				"header": []
 			},
 			"response": []
 		}

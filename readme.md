@@ -34,6 +34,7 @@
   * client is served by server
     * on index.html:  http://localhost:8080/
     * but you must do (at least) a "maven compile" first to make this work
+  * swagger: http://localhost:8080/swagger-ui/index.html
 
 ###client
 * start client

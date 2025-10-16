@@ -1,49 +1,39 @@
 package be.thomasmore.bookserver.controllers;
 
-import be.thomasmore.bookserver.model.converters.AuthorDTOConverter;
-import be.thomasmore.bookserver.model.converters.AuthorDetailedDTOConverter;
 import be.thomasmore.bookserver.model.dto.AuthorDTO;
 import be.thomasmore.bookserver.model.dto.AuthorDetailedDTO;
-import be.thomasmore.bookserver.repositories.AuthorRepository;
+import be.thomasmore.bookserver.services.AuthorService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/authors")
 @Slf4j
 public class AuthorController {
-    
-    @Autowired
-    private AuthorRepository authorRepository;
-    
-    @Autowired
-    private AuthorDTOConverter authorDTOConverter;
 
     @Autowired
-    private AuthorDetailedDTOConverter authorDetailedDTOConverter;
+    private AuthorService authorService;
 
-    @Operation(summary = "list of authors in the database.", 
-              description = "returns a list of authors sorted by name.")
+    @Operation(summary = "find all the authors that are stored in the database ")
     @GetMapping("")
-    public List<AuthorDTO> findAll() {
-        return authorRepository.findAll().stream()
-                .map(authorDTOConverter::convertToDto)
-                .collect(Collectors.toList());
+    public Iterable<AuthorDTO> findAll() {
+        log.info("##### findAll authors");
+        return authorService.findAll();
     }
 
-    @Operation(summary = "Get a single author by ID", 
-              description = "Returns detailed information about a specific author including their books.")
-    @GetMapping("/{id}")
+    @Operation(summary = "get 1 author from the database.",
+            description = "Author with id is fetched from database. " +
+                    "</br>" +
+                    "The books Collection contains only id, title and authors-array. </br>" +
+                    "Use GET api/books/{id} to fetch more info about the books. ")
+    @GetMapping("{id}")
     public AuthorDetailedDTO findOne(@PathVariable int id) {
-        return authorRepository.findById(id)
-                .map(authorDetailedDTOConverter::convertToDto)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Author not found"));
+        log.info(String.format("##### findOne author %d", id));
+        return authorService.findOne(id);
     }
 }

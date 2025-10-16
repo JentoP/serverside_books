@@ -88,11 +88,7 @@ VALUES ('marie', '$2a$10$9TeBFudS7HsgCa4sSvP//O627sMq.KiTFrOr8IzrVlYw5c8aoKzNm',
 INSERT INTO BOOKSUSER (USERNAME, PASSWORD, ROLE)
 VALUES ('vera', '$2y$12$KF3spKP4kgf59.6zYkmjyeYaW2.4ZxV16Grpw1FPsFnzYq68kswJ6', 'USER'); -- vera
 
--- Insert test data for Serie table
-INSERT INTO SERIES (id, name) VALUES (1, 'The Lord of the Rings');
-INSERT INTO SERIES (id, name) VALUES (2, 'Harry Potter');
-INSERT INTO SERIES (id, name) VALUES (3, 'A Song of Ice and Fire');
-INSERT INTO SERIES (id, name) VALUES (4, 'The Witcher');
+insert into SERIE(NAME) values ('Harry Potter');
+insert into SERIE(NAME) values ('Anderland');
 
--- Reset the sequence to avoid conflicts with the test data
-ALTER SEQUENCE IF EXISTS series_seq RESTART WITH 10;
+

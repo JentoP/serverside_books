@@ -92,6 +92,26 @@
 			"response": []
 		},
 		{
+			"name": "get 1 unexisting author (ERROR)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/author/555",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"author",
+						"555"
+					]
+				},
+				"description": "geeft 1 book uit de database (met opgegeven id). \ngeen authentication nodig."
+			},
+			"response": []
+		},
+		{
 			"name": "unexisting request (ERROR)",
 			"request": {
 				"method": "GET",
@@ -142,6 +162,45 @@
 					"path": [
 						"api",
 						"authors",
+						"2"
+					]
+				},
+				"description": "geeft 1 book uit de database (met opgegeven id). \ngeen authentication nodig."
+			},
+			"response": []
+		},
+		{
+			"name": "list all series",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/series",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"series"
+					]
+				},
+				"description": "geeft lijst van  alle authors in de database. \ngeen authentication nodig."
+			},
+			"response": []
+		},
+		{
+			"name": "get 1 serie",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/series/2",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"series",
 						"2"
 					]
 				},
@@ -405,14 +464,6 @@
 						"authors"
 					]
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "invalid request",
-			"request": {
-				"method": "GET",
-				"header": []
 			},
 			"response": []
 		}

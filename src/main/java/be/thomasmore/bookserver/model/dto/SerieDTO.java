@@ -5,13 +5,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-
-
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Data
-public class AuthorDetailedDTO {
+public class SerieDTO {
     private int id;
     private String name;
-    private Collection<BookDTO> books;
 }

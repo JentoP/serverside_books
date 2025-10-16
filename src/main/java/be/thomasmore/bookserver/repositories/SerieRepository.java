@@ -2,10 +2,11 @@ package be.thomasmore.bookserver.repositories;
 
 import be.thomasmore.bookserver.model.Serie;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface SerieRepository extends CrudRepository<Serie, Integer> {
-    Optional<Serie> findByName(@Param("name") String name);
+    List<Serie> findAll();
+
 }

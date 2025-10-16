@@ -15,13 +15,11 @@ public class BookDetailedDTOConverter {
 
     @Autowired
     private ModelMapper modelMapper;
-    @Autowired
-    private AuthorDTOConverter authorDTOConverter;
 
     /**
      * @param book the entity from the db
-     * @return BookDTO object to send to the client.
-     * The BookDTO contains an array of  BookDTO.AuthorDto
+     * @return a BookDetailedDTO object to send to the client.
+     * The BookDetailedDTO contains an array of  AuthorDto
      * so that the client does not need to do a second request to display this basic info.
      */
     public BookDetailedDTO convertToDto(Book book) {
@@ -29,7 +27,7 @@ public class BookDetailedDTOConverter {
     }
 
     /**
-     * @param bookDto the data from client that has to be converted
+     * @param bookDto: the data from client that has to be converted
      * @param book:   the original book entity (from db) - this object will be overwritten with the data from bookDto
      * @return the modified book entity object - ready to save in the database
      * Do not overwrite the authors-array.
@@ -41,8 +39,8 @@ public class BookDetailedDTOConverter {
     }
 
     /**
-     * @param bookDto - can contain an array of BookDTO.authorDto objects.
-     *                Each BookDTO.authorDto has to contain the id of an existing author.
+     * @param bookDto: can contain an array of AuthorDto objects.
+     *                Each AuthorDto has to contain the id of an existing author.
      * @return the book entity object - ready to save in the database
      */
     public Book convertToEntity(BookDetailedDTO bookDto) {

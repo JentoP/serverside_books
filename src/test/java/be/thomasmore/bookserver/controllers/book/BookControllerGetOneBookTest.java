@@ -29,10 +29,37 @@ public class BookControllerGetOneBookTest extends AbstractIntegrationTest {
     public void getOneBookNotFound() throws Exception {
         final MvcResult mvcResult =
                 mockMvc.perform(getMockRequestGet("/api/books/9999"))
-                        .andExpect(status().isInternalServerError()) // strange!!! I expected isNotFound().....??????
+                        .andExpect(status().isNotFound())
                         .andReturn();
         assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with id 9999 does not exist.");
 
+    }
+
+    @Test
+    public void getOneBookWithIdZero() throws Exception {
+        final MvcResult mvcResult =
+                mockMvc.perform(getMockRequestGet("/api/books/0"))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
+        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with id 0 does not exist.");
+    }
+
+    @Test
+    public void getOneBookWithNegativeId() throws Exception {
+        final MvcResult mvcResult =
+                mockMvc.perform(getMockRequestGet("/api/books/-1"))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
+        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with id -1 does not exist.");
+    }
+
+    @Test
+    public void getOneBookWithMaxIntId() throws Exception {
+        final MvcResult mvcResult =
+                mockMvc.perform(getMockRequestGet("/api/books/2147483647"))
+                        .andExpect(status().isNotFound())
+                        .andReturn();
+        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with id 2147483647 does not exist.");
     }
 
 }

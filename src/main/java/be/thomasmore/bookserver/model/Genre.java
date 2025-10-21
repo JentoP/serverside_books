@@ -14,7 +14,8 @@ import jakarta.validation.constraints.NotNull;
 public class Genre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    int id;
+    private int id;
     @NotBlank(message="Genre name should not be blank") @NotNull
-    String name;
+    private String name;
 }
+

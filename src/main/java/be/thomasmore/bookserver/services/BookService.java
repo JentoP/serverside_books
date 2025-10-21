@@ -42,12 +42,11 @@ public class BookService {
     }
 
     public BookDetailedDTO findOne(int id) {
-        final Optional<Book> book = bookRepository.findById(id);
-        if (book.isEmpty())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    String.format("Book with id %d does not exist.", id));
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("Book with id %d does not exist.", id)));
 
-        return bookDetailedDTOConverter.convertToDto(book.get());
+        return bookDetailedDTOConverter.convertToDto(book);
     }
 
     public List<AuthorDTO> authorsForBook(int bookId) {

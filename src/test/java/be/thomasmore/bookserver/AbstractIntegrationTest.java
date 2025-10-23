@@ -20,11 +20,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 @ActiveProfiles("test")
 @ContextConfiguration
 public abstract class AbstractIntegrationTest {
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     protected ObjectMapper mapper;
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     protected MockMvc mockMvc;
 

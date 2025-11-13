@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/sql/books/clean_books.sql", executionPhase = AFTER_TEST_METHOD)
 public class BookControllerDeleteBookTest extends AbstractIntegrationTest {
 
-
     @Test
     @WithMockUser
     public void deleteOneBook() throws Exception {
@@ -21,5 +20,4 @@ public class BookControllerDeleteBookTest extends AbstractIntegrationTest {
 
 
     }
-
 }

@@ -11,13 +11,13 @@ import java.util.Optional;
 
 
 public interface BookRepository extends CrudRepository<Book, Integer> {
-
+//for tests
     Optional<Book> findByTitle(String title);
-
+//for create
     Optional<Book> findByTitleIgnoreCase(String title);
-
+//for edit
     Optional<Book> findByIdNotAndTitleIgnoreCase(int id, String title);
-
+//for create
     @NonNull
     List<Book> findAll();
 

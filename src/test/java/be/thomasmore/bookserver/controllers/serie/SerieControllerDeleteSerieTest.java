@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql(scripts = "/sql/series/clean_series.sql", executionPhase = AFTER_TEST_METHOD)
 public class SerieControllerDeleteSerieTest extends AbstractIntegrationTest {
 
-
     @Test
     @WithMockUser
     public void deleteOneSerie() throws Exception {

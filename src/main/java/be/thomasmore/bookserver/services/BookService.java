@@ -8,6 +8,7 @@ import be.thomasmore.bookserver.model.converters.BookDetailedDTOConverter;
 import be.thomasmore.bookserver.model.dto.AuthorDTO;
 import be.thomasmore.bookserver.model.dto.BookDTO;
 import be.thomasmore.bookserver.model.dto.BookDetailedDTO;
+import be.thomasmore.bookserver.repositories.AuthorRepository;
 import be.thomasmore.bookserver.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,9 @@ import java.util.stream.Collectors;
 public class BookService {
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private AuthorRepository authorRepository;
 
     @Autowired
     private BookDTOConverter bookDTOConverter;
@@ -61,9 +65,17 @@ public class BookService {
     }
 
     public BookDetailedDTO create(BookDetailedDTO bookDto) {
-        if (bookRepository.findByTitleIgnoreCase(bookDto.getTitle()).isPresent())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    String.format("Book with title %s already exists.", bookDto.getTitle()));
+        // Normalize title to lowercase for case-insensitive comparison
+        String normalizedTitle = bookDto.getTitle().toLowerCase().trim();
+
+        // Check if a book with the same title (case-insensitive) already exists
+        List<Book> allBooks = bookRepository.findAll();
+        boolean titleExists = allBooks.stream()
+                .anyMatch(book -> book.getTitle().toLowerCase().trim().equals(normalizedTitle));
+
+        if (titleExists)
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    String.format("A book with title '%s' already exists (case-insensitive check).", bookDto.getTitle()));
 
         bookDto.setAuthors(null); //we do not want to update the relation
         final Book entityToSave = bookDetailedDTOConverter.convertToEntity(bookDto);
@@ -81,10 +93,22 @@ public class BookService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("Book with id %d not found.", id));
 
-        Optional<Book> allBooksWithNewTitle = bookRepository.findByIdNotAndTitleIgnoreCase(id, bookDto.getTitle());
-        if (allBooksWithNewTitle.isPresent())
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
-                    String.format("Another book already exists with title %s.", bookDto.getTitle()));
+        // Normalize title to lowercase for case-insensitive comparison
+        String normalizedNewTitle = bookDto.getTitle().toLowerCase().trim();
+        String currentTitle = bookFromDb.get().getTitle().toLowerCase().trim();
+
+        // Check if the title is being changed
+        if (!normalizedNewTitle.equals(currentTitle)) {
+            // Check if another book with the same title (case-insensitive) already exists
+            List<Book> allBooks = bookRepository.findAll();
+            boolean titleExists = allBooks.stream()
+                    .filter(book -> book.getId() != id) // Exclude current book
+                    .anyMatch(book -> book.getTitle().toLowerCase().trim().equals(normalizedNewTitle));
+
+            if (titleExists)
+                throw new ResponseStatusException(HttpStatus.CONFLICT,
+                        String.format("Another book already exists with title '%s' (case-insensitive check).", bookDto.getTitle()));
+        }
 
         //overwrite fields present in bookDto - relations are not touched
         Book bookSaved = bookRepository.save(bookDetailedDTOConverter.convertToEntity(bookDto, bookFromDb.get()));
@@ -98,9 +122,32 @@ public class BookService {
                     String.format("Book with id %d not found.", id));
 
         Book book = bookFromDb.get();
-        List<Author> authorIdObjects = (authorIds != null)
-                ? authorIds.stream().map(Author::new).collect(Collectors.toList())
-                : new ArrayList<>();
+
+        // Handle null or empty list
+        if (authorIds == null || authorIds.isEmpty()) {
+            book.setAuthors(new ArrayList<>());
+            Book bookSaved = bookRepository.save(book);
+            return bookDetailedDTOConverter.convertToDto(bookSaved);
+        }
+
+        // Validate that all author IDs exist
+        List<Integer> nonExistentAuthorIds = new ArrayList<>();
+        for (Integer authorId : authorIds) {
+            if (!authorRepository.existsById(authorId)) {
+                nonExistentAuthorIds.add(authorId);
+            }
+        }
+
+        // If any author IDs don't exist, throw an error with the list of non-existent IDs
+        if (!nonExistentAuthorIds.isEmpty()) {
+            String errorMessage = String.format("One or more author IDs do not exist: %s", nonExistentAuthorIds);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+        }
+
+        // All author IDs are valid, create Author objects and set them
+        List<Author> authorIdObjects = authorIds.stream()
+                .map(Author::new)
+                .collect(Collectors.toList());
         book.setAuthors(authorIdObjects);
         Book bookSaved = bookRepository.save(book);
         return bookDetailedDTOConverter.convertToDto(bookSaved);

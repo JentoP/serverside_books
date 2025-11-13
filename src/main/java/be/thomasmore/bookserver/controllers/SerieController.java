@@ -44,15 +44,18 @@ public class SerieController {
         return serieService.create(serieDTO);
     }
 
+    //    edit
     @Operation(summary = "Edit an existing serie in the database",
             description = "The name cannot be empty and has to be unique. With case insensitive check. Updates the existing serie in the database")
-    //    edit
     @PutMapping("{id}")
     public SerieDetailedDTO edit(@PathVariable int id, @RequestBody SerieDetailedDTO serieDTO) {
         log.info(String.format("#### edit serie %d", id));
         return serieService.edit(id, serieDTO);
     }
 
+    //delete
+    @Operation(summary = "Delete an existing serie from the database",
+            description = "Deletes the serie with the given id from the database")
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {

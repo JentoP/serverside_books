@@ -50,7 +50,11 @@ public class BookController {
                     "The authors are <b>not</b> updated in the new book.</br>" +
                     "Use PUT api/books/{id}/authors to update those. </br>" +
                     "</br>" +
-                    "The title of the book has to be unique. This is a case-insensitive check </br>" +
+                    "<b>Title Uniqueness Check (Case-Insensitive):</b> </br>" +
+                    "The title of the book has to be unique. This is a case-insensitive check. </br>" +
+                    "For example: '1Q84', '1q84', and '1Q84' are considered the same title. </br>" +
+                    "If a book with the same title already exists, returns HTTP 409 (Conflict) with message: " +
+                    "'A book with title 'X' already exists (case-insensitive check).' </br>" +
                     "</br>" +
                     "Returns new book (containing id from database). ")
     @PostMapping("")
@@ -63,7 +67,11 @@ public class BookController {
             description = "The authors are <b>not</b> updated in the new book.</br>" +
                     "Use PUT api/books/{id}/authors to update those. </br>" +
                     "</br>" +
-                    "The title of the book has to be unique. This is a case-insensitive check </br>" +
+                    "<b>Title Uniqueness Check (Case-Insensitive):</b> </br>" +
+                    "The title of the book has to be unique. This is a case-insensitive check. </br>" +
+                    "For example: '1Q84', '1q84', and '1Q84' are considered the same title. </br>" +
+                    "If another book with the same title already exists, returns HTTP 409 (Conflict) with message: " +
+                    "'Another book already exists with title 'X' (case-insensitive check).' </br>" +
                     "</br>" +
                     "Returns updated book. ")
     @PutMapping("{id}")

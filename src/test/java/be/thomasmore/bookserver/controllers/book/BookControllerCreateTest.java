@@ -83,9 +83,9 @@ public class BookControllerCreateTest extends AbstractIntegrationTest {
 
         //send the same POST again with same title - fails
         final MvcResult mvcResult = mockMvc.perform(mockRequest)
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
-        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with title Recreate an existing book already exists.");
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists (case-insensitive check)");
         assertThat(bookRepository.count()).isEqualTo(1);
     }
 
@@ -120,11 +120,32 @@ public class BookControllerCreateTest extends AbstractIntegrationTest {
         //first time is ok
         mockMvc.perform(mockRequest).andExpect(status().isOk());
 
-        //send the same POST again with same title - fails
+        //send the same POST again with different casing - fails
         final MvcResult mvcResult = mockMvc.perform(mockRequest)
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
-        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Book with title RECREATE AN EXISTING BOOK already exists.");
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists (case-insensitive check)");
+        assertThat(bookRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    @ExceptionHandler
+    @WithMockUser
+    public void createBook_titleHasToBeUniqueCaseInsensitiveWithDifferentCasing() throws Exception {
+        // Create a book with title "1Q84"
+        BookDetailedDTO firstBook = BookDetailedDTO.builder()
+                .title("1Q84")
+                .build();
+        mockMvc.perform(getMockRequestPost("/api/books/", firstBook)).andExpect(status().isOk());
+
+        // Try to create a book with title "1q84" (different casing) - should fail
+        BookDetailedDTO secondBook = BookDetailedDTO.builder()
+                .title("1q84")
+                .build();
+        final MvcResult mvcResult = mockMvc.perform(getMockRequestPost("/api/books/", secondBook))
+                .andExpect(status().isConflict())
+                .andReturn();
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists (case-insensitive check)");
         assertThat(bookRepository.count()).isEqualTo(1);
     }
 }

@@ -91,9 +91,9 @@ public class BookControllerEditTest extends AbstractIntegrationTest {
                 .build();
 
         final MvcResult mvcResult = mockMvc.perform(getMockRequestPut("/api/books/" + ID_OF_EDITED_BOOK, editBookDto))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
-        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Another book already exists with title " + TITLE_OF_BOOK_2 + ".");
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists with title");
 
         Book loadedBook = bookRepository.findById(ID_OF_EDITED_BOOK).orElseThrow();
         assertThat(loadedBook.getTitle()).isEqualTo(ORIGINAL_TITLE_OF_BOOK_1);
@@ -129,13 +129,34 @@ public class BookControllerEditTest extends AbstractIntegrationTest {
         final String TITLE_OF_BOOK_2 = "rest api automation testing from scratch";
         BookDetailedDTO editBookDto = BookDetailedDTO.builder()
                 .id(ID_OF_EDITED_BOOK)
-                .title(TITLE_OF_BOOK_2) // title of book 2
+                .title(TITLE_OF_BOOK_2) // title of book 2 with different casing
                 .build();
 
         final MvcResult mvcResult = mockMvc.perform(getMockRequestPut("/api/books/" + ID_OF_EDITED_BOOK, editBookDto))
-                .andExpect(status().isInternalServerError())
+                .andExpect(status().isConflict())
                 .andReturn();
-        assertThat(mvcResult.getResponse().getErrorMessage()).isEqualTo("Another book already exists with title " + TITLE_OF_BOOK_2 + ".");
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists with title");
+
+        Book loadedBook = bookRepository.findById(ID_OF_EDITED_BOOK).orElseThrow();
+        assertThat(loadedBook.getTitle()).isEqualTo(ORIGINAL_TITLE_OF_BOOK_1);
+    }
+
+    @Test
+    @ExceptionHandler
+    @WithMockUser
+    public void editBook_titleHasToBeUniqueCaseInsensitiveWithDifferentCasing() throws Exception {
+        final int ID_OF_EDITED_BOOK = 1;
+        final String ORIGINAL_TITLE_OF_BOOK_1 = "Test Automation";
+        final String TITLE_OF_BOOK_2 = "REST API AUTOMATION TESTING FROM SCRATCH";
+        BookDetailedDTO editBookDto = BookDetailedDTO.builder()
+                .id(ID_OF_EDITED_BOOK)
+                .title(TITLE_OF_BOOK_2) // title of book 2 with completely different casing
+                .build();
+
+        final MvcResult mvcResult = mockMvc.perform(getMockRequestPut("/api/books/" + ID_OF_EDITED_BOOK, editBookDto))
+                .andExpect(status().isConflict())
+                .andReturn();
+        assertThat(mvcResult.getResponse().getErrorMessage()).contains("already exists with title");
 
         Book loadedBook = bookRepository.findById(ID_OF_EDITED_BOOK).orElseThrow();
         assertThat(loadedBook.getTitle()).isEqualTo(ORIGINAL_TITLE_OF_BOOK_1);

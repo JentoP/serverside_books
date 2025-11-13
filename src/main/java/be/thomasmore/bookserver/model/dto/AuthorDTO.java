@@ -1,5 +1,6 @@
 package be.thomasmore.bookserver.model.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,5 +14,6 @@ import java.util.Collection;
 @Data
 public class AuthorDTO {
     private int id;
+    @NotBlank(message = "Author name should not be blank")
     private String name;
 }

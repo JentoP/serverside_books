@@ -53,19 +53,20 @@ public class AuthorController {
                     "</br>" +
                     "Returns updated author. ")
     @PutMapping("{id}")
-    public AuthorDetailedDTO edit(@PathVariable int id, @RequestBody AuthorDetailedDTO authorDto) {
+    public AuthorDetailedDTO edit(@PathVariable int id, @Valid @RequestBody AuthorDetailedDTO authorDto) {
         log.info(String.format("##### edit author %d", id));
         return authorService.edit(id, authorDto);
     }
 
     @Operation(summary = "delete existing author from the database.",
             description = "If the author is still associated with books, the author cannot be deleted. </br>" +
-                    "In that case an Internal Server Error is thrown. </br>" +
-                    "Also if the author does not exist, an Internal Server Error is thrown.  </br>" )
+                    "In that case a Bad Request (400) error is returned with a message indicating how many books need to be deleted first. </br>" +
+                    "Please delete or reassign all books associated with this author before attempting to delete the author. </br>" +
+                    "If the author does not exist, a Not Found (404) error is returned.  </br>" )
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
-        log.info(String.format("##### delete book %d", id));
+        log.info(String.format("##### delete author %d", id));
         authorService.delete(id);
     }
 

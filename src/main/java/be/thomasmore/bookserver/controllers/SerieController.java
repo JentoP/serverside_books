@@ -4,12 +4,10 @@ import be.thomasmore.bookserver.model.dto.SerieDTO;
 import be.thomasmore.bookserver.model.dto.SerieDetailedDTO;
 import be.thomasmore.bookserver.services.SerieService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/series")
@@ -34,6 +32,14 @@ public class SerieController {
     public SerieDetailedDTO findOne(@PathVariable int id) {
         log.info(String.format("##### findOne serie %d", id));
         return serieService.findOne(id);
+    }
+
+    @Operation(summary = "Create a new serie in the database",
+    description = "The name cannot be empty and has to be unique. With case insensitive check. Adds the newly created serie to the database")
+    @PostMapping("")
+    public SerieDetailedDTO create(@Valid @RequestBody SerieDetailedDTO serieDTO) {
+        log.info("##### create serie");
+        return serieService.create(serieDTO);
     }
 
 }

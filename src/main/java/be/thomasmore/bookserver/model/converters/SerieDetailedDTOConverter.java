@@ -20,4 +20,12 @@ public class SerieDetailedDTOConverter {
         return modelMapper.map(serie, SerieDetailedDTO.class);
     }
 
+    /**
+     * @param serieDetailedDTO data from client that has to be converted to an entity
+     * @return the newly converted data returns as a Serie entity ready to save to the database
+     */
+    public Serie convertToEntity(SerieDetailedDTO serieDetailedDTO) {
+        return modelMapper.map(serieDetailedDTO, Serie.class);
+    }
 }
+

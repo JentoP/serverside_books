@@ -32,4 +32,7 @@ public interface BookRepository extends CrudRepository<Book, Integer> {
     // so I will not add the extra complexity of defining a Collection<Collection<Authors>>
     @SuppressWarnings("SpringDataRepositoryMethodParametersInspection")
     List<Book> findDistinctByAuthorsInAndIdNot(Collection<Author> authors, int bookId);
+
+    // books for a given serie ordered by number in serie
+    List<Book> findBySerie_IdOrderByNumberInSerieAscIdAsc(int serieId);
 }

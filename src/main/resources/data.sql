@@ -100,4 +100,10 @@ VALUES ('vera', '$2y$12$KF3spKP4kgf59.6zYkmjyeYaW2.4ZxV16Grpw1FPsFnzYq68kswJ6', 
 insert into SERIE(NAME) values ('Harry Potter');
 insert into SERIE(NAME) values ('Anderland');
 
+-- add Maddaddam serie and assign books with order numbers
+insert into SERIE(NAME) values ('Maddaddam');
+update BOOK set SERIE_ID = (select id from SERIE where NAME='Maddaddam'), NUMBER_IN_SERIE=1 where TITLE='Oryx and Crake';
+update BOOK set SERIE_ID = (select id from SERIE where NAME='Maddaddam'), NUMBER_IN_SERIE=2 where TITLE='The year of the flood';
+update BOOK set SERIE_ID = (select id from SERIE where NAME='Maddaddam'), NUMBER_IN_SERIE=3 where TITLE='MaddAddam';
+
 

@@ -13,8 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Data
-@EqualsAndHashCode(exclude = {"authors"})
-@ToString(exclude = {"authors"})
+@EqualsAndHashCode(exclude = {"authors", "serie"})
+@ToString(exclude = {"authors", "serie"})
 @Entity
 public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,5 +30,12 @@ public class Book {
 
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Author> authors;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "serie_id")
+    private Serie serie;
+
+    @Column(name = "number_in_serie")
+    private Integer numberInSerie;
 }
 

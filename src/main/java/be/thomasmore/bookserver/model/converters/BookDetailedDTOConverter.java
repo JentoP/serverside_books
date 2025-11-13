@@ -2,6 +2,7 @@ package be.thomasmore.bookserver.model.converters;
 
 import be.thomasmore.bookserver.model.Author;
 import be.thomasmore.bookserver.model.Book;
+import be.thomasmore.bookserver.model.Serie;
 import be.thomasmore.bookserver.model.dto.BookDetailedDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,19 @@ public class BookDetailedDTOConverter {
      * so that the client does not need to do a second request to display this basic info.
      */
     public BookDetailedDTO convertToDto(Book book) {
-        return modelMapper.map(book, BookDetailedDTO.class);
+        BookDetailedDTO dto = modelMapper.map(book, BookDetailedDTO.class);
+        // enrich with serie info (flattened)
+        Serie serie = book.getSerie();
+        if (serie != null) {
+            dto.setSerieId(serie.getId());
+            dto.setSerieName(serie.getName());
+            dto.setNumberInSerie(book.getNumberInSerie());
+        } else {
+            dto.setSerieId(null);
+            dto.setSerieName(null);
+            dto.setNumberInSerie(null);
+        }
+        return dto;
     }
 
     /**
@@ -35,6 +48,7 @@ public class BookDetailedDTOConverter {
      */
     public Book convertToEntity(BookDetailedDTO bookDto, Book book) {
         modelMapper.map(bookDto, book);
+        // ignore serie mapping from DTO here (only flatten fields present)
         return book;
     }
 
@@ -52,6 +66,7 @@ public class BookDetailedDTOConverter {
                     .map(a -> new Author(a.getId()))
                     .collect(Collectors.toCollection(ArrayList::new)));
         }
+        // serie is not set via BookDetailedDTO (flattened only)
         return book;
     }
 }

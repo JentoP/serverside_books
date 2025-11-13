@@ -1,11 +1,14 @@
 package be.thomasmore.bookserver.services;
 
 import be.thomasmore.bookserver.model.Serie;
+import be.thomasmore.bookserver.model.Book;
 import be.thomasmore.bookserver.model.converters.SerieDTOConverter;
 import be.thomasmore.bookserver.model.converters.SerieDetailedDTOConverter;
 import be.thomasmore.bookserver.model.dto.SerieDTO;
 import be.thomasmore.bookserver.model.dto.SerieDetailedDTO;
+import be.thomasmore.bookserver.model.dto.SerieDetailedDTOBookItem;
 import be.thomasmore.bookserver.repositories.SerieRepository;
+import be.thomasmore.bookserver.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class SerieService {
     private SerieDTOConverter serieDTOConverter;
     @Autowired
     private SerieDetailedDTOConverter serieDetailedDTOConverter;
+    @Autowired
+    private BookRepository bookRepository;
 
     public List<SerieDTO> findAll() {
         final List<Serie> series = serieRepository.findAll();
@@ -37,7 +42,14 @@ public class SerieService {
         if (serie.isEmpty())
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                     String.format("Serie with id %d does not exist.", id));
-        return serieDetailedDTOConverter.convertToDto(serie.get());
+        SerieDetailedDTO dto = serieDetailedDTOConverter.convertToDto(serie.get());
+        // add books list with title and numberInSerie
+        final java.util.List<Book> books = bookRepository.findBySerie_IdOrderByNumberInSerieAscIdAsc(id);
+        final java.util.List<SerieDetailedDTOBookItem> items = books.stream()
+                .map(b -> new SerieDetailedDTOBookItem(b.getId(), b.getTitle(), b.getNumberInSerie()))
+                .collect(java.util.stream.Collectors.toList());
+        dto.setBooks(items);
+        return dto;
     }
 
     public SerieDetailedDTO create(SerieDetailedDTO serieDto) {
